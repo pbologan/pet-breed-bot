@@ -1,0 +1,29 @@
+# Dockerfile for Telegram Bot
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY app/ ./app/
+COPY scripts/ ./scripts/
+COPY models/ ./models/
+COPY .env .env
+
+# Create necessary directories
+RUN mkdir -p logs temp data
+
+# Run the bot
+CMD ["python", "-m", "app.bot.main"]
